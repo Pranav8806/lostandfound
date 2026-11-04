@@ -11,7 +11,10 @@
 #include <cctype>
 
 using namespace std;
-
+struct MatchResult {
+    Item foundItem;
+    int score;
+};
 class LostFoundSystem {
 
 private:
@@ -21,7 +24,8 @@ private:
     vector<Item> foundItems;
 
     // Fast ID lookup
-    unordered_map<int, Item> itemMap;
+    unordered_map<int, Item> lostItemMap;
+    unordered_map<int, Item> foundItemMap;
 
     // Duplicate prevention
     unordered_set<string> itemKeys;
@@ -44,13 +48,13 @@ public:
     void searchByLocation(string location);
 
     // 3. Matching
-    int compareName(Item& lost, Item& found);
-    int compareCategory(Item& lost, Item& found);
-    int compareColor(Item& lost, Item& found);
-    int compareLocation(Item& lost, Item& found);
-    int compareDate(Item& lost, Item& found);
+    int compareName(const Item& lost, const Item& found);
+    int compareCategory(const Item& lost, const Item& found);
+    int compareColor(const Item& lost, const Item& found);
+    int compareLocation(const Item& lost, const Item& found);
+    int compareDate(const Item& lost, const Item& found);
 
-    int calculateMatchScore(Item& lost, Item& found);
+    int calculateMatchScore(const Item &lost, const Item& found);
     void findMatches(int lostItemId);
     void displayBestMatches(int lostItemId);
 
@@ -65,7 +69,7 @@ public:
 
     // 5. Utility
     int generateId();
-    bool checkDuplicate(Item& item);
+    bool checkDuplicate(Item& item,bool islostconst );
     void sortItems();
 };
 

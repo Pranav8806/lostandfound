@@ -2,6 +2,7 @@
 //As clang does not have #include<bits/stdc++.h>
 #include <iostream>
 #include <string>
+#include<queue>
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
@@ -16,11 +17,12 @@ void LostFoundSystem::addLostItem(Item item){
     }
     item.id=generateId();
     item.status="LOST";
-    if(checkDuplicate(item)){
+    if(checkDuplicate(item,true)){
         cout<<"Item already reported lost"<<endl;
         return;
     }
     lostItems.push_back(item);
+    lostItemMap[item.id] = item;
     cout<<"Lost Item Successfully Registered !"<<endl;
     cout<<"Item Id : "<<item.id<<endl;
     return;
@@ -33,11 +35,12 @@ void LostFoundSystem::addFoundItem(Item item){
     }
     item.id=generateId();
     item.status="FOUND";
-    if(checkDuplicate(item)){
+    if(checkDuplicate(item,false)){
         cout<<"Item already reported lost"<<endl;
         return;
     }
     foundItems.push_back(item);
+    foundItemMap[item.id] = item;
     cout<<"Founded Item Successfully Registered !"<<endl;
     cout<<"Item Id : "<<item.id<<endl;
     return;
@@ -95,6 +98,7 @@ bool LostFoundSystem::deleteLostItem(int id){
         if(lostItems[i].id == id){
             found = true;
             lostItems.erase(lostItems.begin() + i);
+            lostItemMap.erase(id);
             cout << "Lost item deleted successfully!"<<endl;
             return true;
         }
@@ -121,6 +125,7 @@ bool LostFoundSystem::deleteFoundItem(int id){
         if(foundItems[i].id == id){
             found = true;
             foundItems.erase(foundItems.begin() + i);
+            foundItemMap.erase(id);
             cout << "Found item deleted successfully!"<<endl;
             return true;
         }
@@ -138,28 +143,24 @@ bool LostFoundSystem::deleteFoundItem(int id){
 //searching
 
 //Search by ID
-Item* LostFoundSystem::searchById(int id){
-  // Search in lost items
-  for (Item& item : lostItems){
-    if (item.id == id){
-         return &item;
+Item* LostFoundSystem::searchById(int id)
+{
+    auto it = lostItemMap.find(id);
+    if (it != lostItemMap.end())
+    {
+        return &(it->second);
     }
-  }
-
-  // Search in found items
-  for (Item& item : foundItems){
-    if (item.id == id){
-        return &item;
+    auto it2 = foundItemMap.find(id);
+    if (it2 != foundItemMap.end())
+    {
+        return &(it2->second);
     }
-  }
-
-  // Item not found
-  return nullptr;
+    cout << "Item not found!" << endl;
+    return nullptr;
 }
 
 //Search by name
 void LostFoundSystem::searchByName(string name){
-  // Convert search input to lowercase
   transform(name.begin(), name.end(), name.begin(), [](unsigned char c) { return tolower(c); });
 
   bool found = false;
@@ -310,7 +311,134 @@ void LostFoundSystem::searchByLocation(string location){
 
 
 //Matching functions
+int LostFoundSystem :: compareName(const Item& lost, const Item& found){
+    string n1=found.name;
+    string n2=lost.name;
+    transform(n1.begin(), n1.end(), n1.begin(),
+            [](unsigned char c) {
+                return tolower(c);
+            });
 
+    transform(n2.begin(), n2.end(), n2.begin(),
+                [](unsigned char c) {
+                    return tolower(c);
+                });
+    if(n1==n2) return 30;
+    if(n1.find(n2)!=string::npos || n2.find(n1)!=string ::npos)
+        return 15;
+    return 0;
+}
+
+int LostFoundSystem::compareCategory(const Item& lost, const Item& found)
+{
+    string n1 = found.category;
+    string n2 = lost.category;
+    transform(n1.begin(), n1.end(), n1.begin(),
+            [](unsigned char c) {
+                return tolower(c);
+            });
+
+    transform(n2.begin(), n2.end(), n2.begin(),
+                [](unsigned char c) {
+                    return tolower(c);
+                });
+    if (n1 == n2)
+        return 20;
+    return 0;
+}
+
+int LostFoundSystem::compareColor(const Item& lost, const Item& found)
+{
+    string n1 = found.color;
+    string n2 = lost.color;
+    transform(n1.begin(), n1.end(), n1.begin(),
+            [](unsigned char c) {
+                return tolower(c);
+            });
+
+    transform(n2.begin(), n2.end(), n2.begin(),
+                [](unsigned char c) {
+                    return tolower(c);
+                });
+    if (n1 == n2)
+        return 20;
+    if (n1.find(n2) != string::npos ||
+        n2.find(n1) != string::npos)
+        return 10;
+    return 0;
+}
+
+int LostFoundSystem::compareLocation(const Item& lost, const Item& found)
+{
+    string n1 = found.location;
+    string n2 = lost.location;
+    transform(n1.begin(), n1.end(), n1.begin(),
+                [](unsigned char c) {
+                    return tolower(c);
+                });
+
+    transform(n2.begin(), n2.end(), n2.begin(),
+                [](unsigned char c) {
+                    return tolower(c);
+                });
+    if (n1 == n2)
+        return 20;
+    if (n1.find(n2) != string::npos ||
+        n2.find(n1) != string::npos)
+        return 10;
+    return 0;
+    }
+
+int LostFoundSystem::compareDate(const Item& lost, const Item& found)
+{
+    string n1 = found.date;
+    string n2 = lost.date;
+    if (n1 == n2)
+        return 10;
+    return 0;
+}
+
+int LostFoundSystem::calculateMatchScore(const Item& lost, const Item& found)
+{
+    int score = 0;
+
+    score += compareName(lost, found);       // 30 points
+    score += compareCategory(lost, found);   // 20 points
+    score += compareColor(lost, found);      // 20 points
+    score += compareLocation(lost, found);   // 20 points
+    score += compareDate(lost, found);       // 10 points
+
+    return score;
+}
+
+void LostFoundSystem::findMatches(int lostItemId){
+    Item *lostItem=nullptr;
+    for (Item& item : lostItems) {
+        if (item.id == lostItemId) {
+            lostItem = &item;
+            break;
+        }
+    }
+    if (lostItem == nullptr) {
+        cout << "Lost item not found" << endl;
+        return;
+    }
+    priority_queue<pair<int, Item>> pq;
+    for (Item item : foundItems) {
+        int score = calculateMatchScore(*lostItem, item);
+        if (score >= 60) {
+            pq.push({score, item});
+        }
+    }
+    //display best matches
+    while (!pq.empty()) {
+        cout << "Match Score: " << pq.top().first << endl;
+        cout << "Item Name: " << pq.top().second.name << endl;
+        cout<<"Item ID: "<< pq.top().second.id << endl;
+        pq.pop();
+    }
+    
+}
 //Claims
 
 //Utility
@@ -322,13 +450,22 @@ int LostFoundSystem::generateId(){
 }
 
 // Check duplicate item
-bool LostFoundSystem::checkDuplicate(Item& item){
-  string key = item.name + item.category + item.color + item.location;
+bool LostFoundSystem::checkDuplicate(Item& item, bool isLost)
+{
+    string key = item.name + "|" + item.category + "|" +
+                    item.color + "|" + item.location;
+    if (isLost)
+    {
+        if (lostItemMap.find(key) != lostItemMap.end())
+            return true;
+        lostItemMap.insert(key);
+    }
+    else
+    {
+        if (foundItemMap.find(key) != foundItemMap.end())
+            return true;
 
-  if(itemKeys.find(key) != itemKeys.end()){
-       return true;
-  }
-
-  itemKeys.insert(key);
-  return false;
+        foundItemMap.insert(key);
+    }
+    return false;
 }
