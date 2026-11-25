@@ -6,12 +6,7 @@
 #include "LostFoundSystem.h"
 
 using namespace std;
-
-// ==========================================
 // INPUT HELPERS
-// ==========================================
-
-// Reads one line; exits cleanly if input ends (Ctrl+D / Ctrl+Z / piped EOF)
 string readLine(const string& message)
 {
     string line;
@@ -53,10 +48,7 @@ int getIntegerInput(const string& message)
     }
 }
 
-// ==========================================
 // TAKE ITEM DETAILS
-// ==========================================
-
 Item inputItem()
 {
     Item item;
@@ -74,10 +66,7 @@ Item inputItem()
     return item;
 }
 
-// ==========================================
 // SEARCH SUBMENU
-// ==========================================
-
 void searchMenu(LostFoundSystem& app)
 {
     int choice;
@@ -138,9 +127,7 @@ void searchMenu(LostFoundSystem& app)
     } while (choice != 5);
 }
 
-// ==========================================
 // CLAIM MANAGEMENT SUBMENU
-// ==========================================
 
 void claimMenu(LostFoundSystem& app)
 {
@@ -204,10 +191,7 @@ void claimMenu(LostFoundSystem& app)
     } while (choice != 5);
 }
 
-// ==========================================
 // MAIN FUNCTION
-// ==========================================
-
 int main()
 {
     LostFoundSystem app;   // not named "system": that would shadow std::system

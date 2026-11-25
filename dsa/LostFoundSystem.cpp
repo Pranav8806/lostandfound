@@ -8,9 +8,7 @@ using namespace std;
 // Minimum score for two items to be considered a match
 static const int MATCH_THRESHOLD = 60;
 
-// ==========================================
-// STATIC HELPERS
-// ==========================================
+// STATIC HELPER
 
 static string toLowerCase(string str)
 {
@@ -93,10 +91,7 @@ static bool printMatching(const vector<Item>& items,
     return any;
 }
 
-// ==========================================
 // ITEM MANAGEMENT
-// ==========================================
-
 int LostFoundSystem::generateId()
 {
     return nextItemId++;
@@ -283,10 +278,7 @@ bool LostFoundSystem::deleteFoundItem(int id)
     return true;
 }
 
-// ==========================================
 // SEARCHING
-// ==========================================
-
 // O(1) lookup through the hash maps
 Item* LostFoundSystem::searchById(int id)
 {
@@ -487,10 +479,7 @@ void LostFoundSystem::findMatches()
         cout << "No active lost items available for matching!\n";
 }
 
-// ==========================================
 // CLAIMS
-// ==========================================
-
 void LostFoundSystem::createClaim(int lostItemId, int foundItemId,
                                   int claimantId, int finderId)
 {
@@ -664,9 +653,7 @@ void LostFoundSystem::rejectClaim(int claimId, int finderId)
     cout << "Claim not found or you are not its finder!\n";
 }
 
-// ==========================================
 // UTILITY
-// ==========================================
 
 void LostFoundSystem::sortItems(vector<Item>& items, string criterion)
 {
